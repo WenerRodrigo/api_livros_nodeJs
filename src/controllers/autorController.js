@@ -2,48 +2,49 @@ import { autor } from "../models/Autor.js";
 
 class AutorController {
 
-  static async listarAutores (req, res) {
+  static async listarAutores(req, res) {
     try {
-      const listaAutores = await autor.find({});
-      res.status(200).json(listaAutores);
+      const autoresResultado = await autores.find();
+      res.status(200).json(autoresResultado)
     } catch (erro) {
       res.status(500).json({ message: `${erro.message} - falha na requisição` });
     }
   }
 
-  static async listarAutorPorId (req, res) {
+  static listarAutorPorId = async (req, res) => {
     try {
       const id = req.params.id;
-      const autorEncontrado = await autor.findById(id);
-      res.status(200).json(autorEncontrado);
+      const autorResultado = await autor.findById(id);
+      res.status(200).send(autorResultado)
     } catch (erro) {
-      res.status(500).json({ message: `${erro.message} - falha na requisição do autor` });
+      res.status(400).json({ message: `${erro.message} - falha na requisição` });
     }
   }
 
-  static async cadastrarAutor (req, res) {
+  static cadastrarAutor = async (req, res) => {
     try {
-      const novoAutor = await autor.create(req.body);
-      res.status(201).json({ message: "criado com sucesso", livro: novoAutor });
+      let autor = new autores(req.body);
+      const autorResultado = await autor.save();
+      res.status(201).send(autorResultado.toJSON());
     } catch (erro) {
       res.status(500).json({ message: `${erro.message} - falha ao cadastrar autor` });
     }
   }
 
-  static async atualizarAutor (req, res) {
+  static atualizarAutor = async (req, res) => {
     try {
       const id = req.params.id;
-      await autor.findByIdAndUpdate(id, req.body);
-      res.status(200).json({ message: "autor atualizado" });
+      await autores.findByIdAndUpdate(id, { $set: req.body });
+      res.status(200).json({ message: "Autor atualizado com sucesso!" });
     } catch (erro) {
       res.status(500).json({ message: `${erro.message} - falha na atualização` });
     }
   }
 
-  static async excluirAutor (req, res) {
+  static excluirAutor = async (req, res) => {
     try {
       const id = req.params.id;
-      await autor.findByIdAndDelete(id);
+      await autores.findByIdAndDelete(id);
       res.status(200).json({ message: "autor excluído com sucesso" });
     } catch (erro) {
       res.status(500).json({ message: `${erro.message} - falha na exclusão` });
